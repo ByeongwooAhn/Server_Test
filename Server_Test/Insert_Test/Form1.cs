@@ -18,7 +18,7 @@ namespace Insert_Test
 
         public void Signup()
         {
-            string sql = "Insert Into member_name (이름, 성별) values ('" + textBox1.Text + "', " + textBox2.Text + ")";
+            string sql = "Insert Into member_name (이름, 성별) values ('" + textBox1.Text + "', '" + textBox2.Text + "')";
 
             using (MySqlConnection conn = new MySqlConnection(connstr))
             {
@@ -32,27 +32,55 @@ namespace Insert_Test
             }
         }
 
+        public DataSet Search()
+        {
+            string sql = "select * from member_name where 이름 = '" + textBox5.Text + "' and 성별 = '" + textBox6.Text + "'";
+            DataSet ds = new DataSet();
+
+                using (MySqlConnection conn = new MySqlConnection(connstr))
+                {
+                    try
+                    {
+                        conn.Open();
+                        MySqlCommand cmd = new MySqlCommand(sql, conn);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex) { }
+                }
+
+                using (MySqlConnection conn = new MySqlConnection(connstr))
+                {
+                    try
+                    {
+                    
+                        {
+                            conn.Open();
+                            MySqlDataAdapter da = new MySqlDataAdapter(sql, conn);
+                            da.Fill(ds);
+                        }
+                  
+                }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            return ds;
+        }
+
         public void Login()
         {
-            string sql = "select 이름, 성별 from member_name" ;
-            MySqlConnection conn = new MySqlConnection(connstr);
-            MySqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = sql;
+            string sql = "select * from member_name where 이름 = '" + textBox5.Text + "' and 성별 = '" + textBox6.Text + "'";
 
-            try
+            using (MySqlConnection conn = new MySqlConnection(connstr))
             {
-                conn.Open();
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                textBox3.Text = reader["이름"].ToString();
-                textBox4.Text = reader["성별"].ToString();
+                try
+                {
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex) { }
             }
 
         }
@@ -100,31 +128,33 @@ namespace Insert_Test
             string sql = "select * from member_name";
             DataSet ds = new DataSet();
 
-            using (MySqlConnection conn = new MySqlConnection(connstr))
+            if (sql.Equals(true))
             {
-                try
-                {
-                    conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-
                 using (MySqlConnection conn = new MySqlConnection(connstr))
-            {
-                try
                 {
-                    conn.Open();
-                    MySqlDataAdapter da = new MySqlDataAdapter(sql, conn);
-                    da.Fill(ds);
-                }
-                catch (Exception ex)
-                {
+                    try
+                    {
+                        conn.Open();
+                        MySqlCommand cmd = new MySqlCommand(sql, conn);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
 
+                    }
+                }
+                using (MySqlConnection conn = new MySqlConnection(connstr))
+                {
+                    try
+                    {
+                        conn.Open();
+                        MySqlDataAdapter da = new MySqlDataAdapter(sql, conn);
+                        da.Fill(ds);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
             }
             return ds;
@@ -150,6 +180,17 @@ namespace Insert_Test
         private void button3_Click_1(object sender, EventArgs e)
         {
             UpdateDB();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DataSet ds;
+            ds = Search();
+            try
+            {
+                dataGridView2.DataSource = ds.Tables[0];
+            }
+            catch(Exception ex) { };
         }
     }
 }
