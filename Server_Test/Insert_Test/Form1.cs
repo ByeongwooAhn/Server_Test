@@ -4,7 +4,6 @@ using System.Data;
 using System.Windows.Forms;
 using MySqlCommand = MySql.Data.MySqlClient.MySqlCommand;
 using MySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
-using MySqlDataReader = MySql.Data.MySqlClient.MySqlDataReader;
 
 namespace Insert_Test
 {
@@ -68,17 +67,30 @@ namespace Insert_Test
             return ds;
         }
 
-        public void Login()
+        public void Login(string ID, string PW)
         {
-            string sql = "select * from member_name where 이름 = '" + textBox5.Text + "' and 성별 = '" + textBox6.Text + "'";
+            DataSet ds;
+            ds = Search();
 
             using (MySqlConnection conn = new MySqlConnection(connstr))
             {
                 try
                 {
                     conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(sql, conn);
-                    cmd.ExecuteNonQuery();
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+                        foreach (DataRow row in ds.Tables[0].Rows)
+                        {
+                            if (ID == row["이름"].ToString() && PW == row["성별"].ToString())
+                            {
+                                dataGridView2.DataSource = ds.Tables[0];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        label1.Text = "아이디와 패스워드를 확인하여 주십시오.";
+                    }
                 }
                 catch (Exception ex) { }
             }
@@ -128,9 +140,7 @@ namespace Insert_Test
             string sql = "select * from member_name";
             DataSet ds = new DataSet();
 
-            if (sql.Equals(true))
-            {
-                using (MySqlConnection conn = new MySqlConnection(connstr))
+             using (MySqlConnection conn = new MySqlConnection(connstr))
                 {
                     try
                     {
@@ -156,13 +166,8 @@ namespace Insert_Test
 
                     }
                 }
-            }
+           
             return ds;
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            Login();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -184,13 +189,9 @@ namespace Insert_Test
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DataSet ds;
-            ds = Search();
-            try
-            {
-                dataGridView2.DataSource = ds.Tables[0];
-            }
-            catch(Exception ex) { };
+            
+                Login(textBox5.Text, textBox6.Text);
+            
         }
     }
 }
